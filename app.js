@@ -66,6 +66,11 @@ function setup() {
   player.anchor.set(.5);
 
   // Brick Bois
+  // COLORS
+  // 355890
+  // 7395cc
+  // bccbe4
+  // ded
   {
     for (let i = 0; i < row; i++) {
       for (let j = 0; j < col; j++) {
@@ -76,6 +81,9 @@ function setup() {
         brick.y = (col/2) * 16 + (-18 * j);
         brick.anchor.set(.5);
         brick.rotation = 1.57079632679;
+
+        brick.hp = 3;
+        brick.tint = 0x355890;
         bricks.push(brick);
       }
     }
@@ -83,7 +91,38 @@ function setup() {
 
   // Wallie Palies
   {
+    for (let i = 0; i < 7; i++) {
+      let wall = new sprite(bar_texture);
+      let wall2 = new sprite(bar_texture);
+
+      stage.addChild(wall);
+      stage.addChild(wall2);
+
+      wall.tint = 0x909090;
+      wall2.tint = 0x909090;
+
+      wall.x = -300;
+      wall.y = -148 + i * 64;
+      
+      wall2.x = 300;
+      wall2.y = -148 + i * 64;
+
+      walls.push(wall);
+      walls.push(wall2);
+    }
+  }
+
     
+  for (let i = 0; i < 9; i++) {
+    let wall = new sprite(bar_texture);
+    wall.tint = 0x909090;
+
+    stage.addChild(wall);
+    wall.y = -148;
+    wall.x = -216 + i * 64;
+    wall.rotation = 1.57079632679;
+
+    walls.push(wall);
   }
 
   app.ticker.add(delta => game(delta));
