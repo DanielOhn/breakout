@@ -32,7 +32,10 @@ function resize() {
 
 let loader = PIXI.Loader.shared;
 let sprite = PIXI.Sprite;
-loader.add("bar", "img/bar.png").load(setup);
+loader
+  .add("bar", "img/bar.png")
+  .add('ball', 'img/ball.png')
+  .load(setup);
 
 let player;
 
@@ -42,9 +45,9 @@ let walls = [];
 let row = 5;
 let col = 5;
 
-function makeBricks() {
-
-}
+let left = keyboard('a');
+let right = keyboard('d');
+let active = keyboard('space');
 
 function setup() {
   let bar_texture = loader.resources.bar.texture;
@@ -64,6 +67,8 @@ function setup() {
   // 90 degree is pi/2
   player.rotation = 1.57079632679;
   player.anchor.set(.5);
+
+  player.vx = 0;
 
   // Brick Bois
   // COLORS
@@ -112,7 +117,6 @@ function setup() {
     }
   }
 
-    
   for (let i = 0; i < 9; i++) {
     let wall = new sprite(bar_texture);
     wall.tint = 0x909090;
@@ -125,10 +129,30 @@ function setup() {
     walls.push(wall);
   }
 
+  left.press = () => {
+    player.vx = -1;
+  }
+
+  left.release = () => {
+    player.vx = 0;
+  }
+
+  right.press = () => {
+    player.vx = 1;
+  }
+
+  right.release = () => {
+    player.vx = 0;
+  }
+
   app.ticker.add(delta => game(delta));
 }
 
 function game(delta) {
+  let speed = 5 * delta;
+
+  player.x += player.vx * speed;
+
 }
 
 function check_collid(r1, r2) {
