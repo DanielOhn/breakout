@@ -1,7 +1,7 @@
 const canvas = document.getElementById('mycanvas');
 
 let type = 'WebGL';
-PIXI.setting.SPRITE_MAX_TEXTURES = Math.min(PIXI.settings.SPRITE_MAX_TEXTURES, 16);
+PIXI.settings.SPRITE_MAX_TEXTURES = Math.min(PIXI.settings.SPRITE_MAX_TEXTURES, 16);
 
 if (!PIXI.utils.isWebGLSupported()) {
   type='canvas';
