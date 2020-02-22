@@ -17,8 +17,7 @@ const app = new PIXI.Application({
   view: canvas,
   width: _w,
   height: _h,
-  resolution: window.devicePixelRatio,
-  autoDensity: true
+
 });
 
 window.addEventListener("resize", resize);
@@ -37,7 +36,7 @@ loader
   .add('ball', 'img/ball.png')
   .load(setup);
 
-let player;
+let player, ball;
 
 let bricks = [];
 let walls = [];
@@ -47,10 +46,11 @@ let col = 5;
 
 let left = keyboard('a');
 let right = keyboard('d');
-let active = keyboard('space');
+let space = keyboard(' ');
 
 function setup() {
   let bar_texture = loader.resources.bar.texture;
+  let ball_texture = loader.resources.ball.texture;
 
   let stage = new PIXI.Container();
   app.stage.addChild(stage);
@@ -69,6 +69,16 @@ function setup() {
   player.anchor.set(.5);
 
   player.vx = 0;
+
+  ball = new sprite(ball_texture);
+  stage.addChild(ball);
+
+  ball.y = 272;
+  ball.x = -8;
+
+  ball.vx = 0;
+  ball.vy = 0;
+  ball.dock = true;
 
   // Brick Bois
   // COLORS
@@ -96,7 +106,7 @@ function setup() {
 
   // Wallie Palies
   {
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < 8; i++) {
       let wall = new sprite(bar_texture);
       let wall2 = new sprite(bar_texture);
 
@@ -107,10 +117,13 @@ function setup() {
       wall2.tint = 0x909090;
 
       wall.x = -300;
-      wall.y = -148 + i * 64;
+      wall.y = -150 + i * 64;
       
       wall2.x = 300;
-      wall2.y = -148 + i * 64;
+      wall2.y = -150 + i * 64;
+
+      wall.anchor.set(.5);
+      wall2.anchor.set(.5);
 
       walls.push(wall);
       walls.push(wall2);
@@ -122,9 +135,11 @@ function setup() {
     wall.tint = 0x909090;
 
     stage.addChild(wall);
-    wall.y = -148;
-    wall.x = -216 + i * 64;
+    wall.y = -182;
+    wall.x = -256 + i * 64;
     wall.rotation = 1.57079632679;
+
+    wall.anchor.set(.5);
 
     walls.push(wall);
   }
@@ -145,14 +160,49 @@ function setup() {
     player.vx = 0;
   }
 
+  space.press = () => {
+    if (ball.dock == true) ball.dock = false;
+  }
+
   app.ticker.add(delta => game(delta));
 }
 
 function game(delta) {
   let speed = 5 * delta;
+  let ball_speed = 4 * delta;
 
+  for (let wall of walls) {
+    if (check_collid(player, wall)) {
+      if (player.vx < 1 || player.vx > 1) {
+        player.vx = 0;
+      } 
+    }
+
+    if (check_collid(wall, ball)) {
+      ball.vy = ball.vy * -1;
+    }
+  }
+
+  if (check_collid(ball, player)) {
+    ball.vy *= -1;
+  }
+
+  if (ball.dock === true) {
+    ball.x += player.vx * speed;
+  } else if (ball.dock === false) {
+    send_ball();
+  }
+
+  ball.y += ball.vy * ball_speed;
+  ball.x += ball.vx * ball_speed;
   player.x += player.vx * speed;
 
+}
+
+function send_ball() {
+  ball.vx = player.vx;
+  ball.vy = -1;
+  ball.dock = null;
 }
 
 function check_collid(r1, r2) {
